@@ -105,7 +105,7 @@ public class MTDBotPlugin extends Plugin{
         Vars.netServer.admins.addChatFilter((player, text) -> {
 
 
-            if(m_playerNew == null ) {
+            //if(m_playerNew == null ) {
                 Vars.netServer.admins.updatePlayerJoined("456", "1.2.3.4", m_strBotName);
                 m_playerNew = Player.create();
                 m_playerNew.name = m_strBotName;
@@ -117,13 +117,16 @@ public class MTDBotPlugin extends Plugin{
                 //m_playerNew.color.set(Color.yellow);
                 //m_playerNew.added = true;
                 m_playerNew.set(100,100);
-                Unit unitNew = UnitTypes.gamma.spawn(player.team(), m_playerNew.x, m_playerNew.y);
+                //Unit unitNew = player.team().core().unit();
+                Unit unitNew = UnitTypes.alpha.spawn(player.team(), m_playerNew.x, m_playerNew.y);
                 unitNew.spawnedByCore = true;
                 unitNew.dead = false;
-                unitNew.move(100,100);
+                unitNew.add();
+                //unitNew.move(100,100);
                 m_playerNew.unit(unitNew);
-                m_playerNew.unit().move(100,100);
-                m_playerNew.team(player.team());
+                m_playerNew.add();
+                //m_playerNew.unit().move(100,100);
+                //m_playerNew.team(player.team());
                 Groups.player.add(m_playerNew);
 
                 //writeBuffer.reset();
@@ -132,15 +135,19 @@ public class MTDBotPlugin extends Plugin{
 
                 //Vars.netServer.sendWorldData(player);
                 Events.fire(new PlayerConnect(player));
-            }
+                Events.fire(new UnitControlEvent(m_playerNew, unitNew));
+            //}
 
-            m_playerNew.set(100,100);
-            m_playerNew.unit().move(100,100);
-            m_playerNew.unit().dead = false;
-            //m_playerNew.draw();
-            player.sendMessage("test", m_playerNew);
-            player.sendMessage("dead:"+m_playerNew.dead(), m_playerNew);
-            player.sendMessage("pos:"+m_playerNew.x+m_playerNew.y, m_playerNew);
+            Player playerBot = Groups.player.find(p -> p.name == m_strBotName);
+            playerBot.set(100,100);
+            playerBot.unit().move(100,100);
+            playerBot.unit().dead = false;
+
+            Fx.unitSpirit.at(playerBot.x, playerBot.y, 0f, playerBot.unit());
+
+            player.sendMessage("test", playerBot);
+            player.sendMessage("dead:"+playerBot.dead(), playerBot);
+            player.sendMessage("pos:"+playerBot.x+playerBot.y, playerBot);
 
 
 /*
