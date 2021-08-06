@@ -116,15 +116,18 @@ public class MTDBotPlugin extends Plugin{
 
                 //m_playerNew.color.set(Color.yellow);
                 //m_playerNew.added = true;
-                m_playerNew.set(100,100);
+                //m_playerNew.set(100,100);
+                m_playerNew.set(0,0);
                 //Unit unitNew = player.team().core().unit();
                 //Unit unitNew = UnitTypes.alpha.spawn(player.team(), m_playerNew.x, m_playerNew.y);
                 Unit unitNew = UnitTypes.alpha.create(player.team());
                 unitNew.spawnedByCore = true;
                 unitNew.dead = false;
+                //unitNew.set(100,100); // ? this may cause fail
                 unitNew.add();
                 unitNew.move(100,100);
                 unitNew.update();
+                unitNew.health = 100;
                 //unitNew.move(100,100);
                 m_playerNew.unit(unitNew);
                 m_playerNew.add();
