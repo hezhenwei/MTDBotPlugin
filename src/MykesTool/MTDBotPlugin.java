@@ -105,23 +105,26 @@ public class MTDBotPlugin extends Plugin{
         Vars.netServer.admins.addChatFilter((player, text) -> {
 
 
-            //if(m_playerNew == null ) {
-                Vars.netServer.admins.updatePlayerJoined("456", "1.2.3.4", m_strBotName);
+            if(m_playerNew == null ) {
+                Vars.netServer.admins.updatePlayerJoined("[LOCAL]", "1.2.3.4", m_strBotName);
                 m_playerNew = Player.create();
                 m_playerNew.name = m_strBotName;
                 m_playerNew.admin = true;
                 m_playerNew.id = 123;
                 m_playerNew.id(123);
-
                 m_playerNew.locale = "en";
+
                 //m_playerNew.color.set(Color.yellow);
                 //m_playerNew.added = true;
                 m_playerNew.set(100,100);
                 //Unit unitNew = player.team().core().unit();
-                Unit unitNew = UnitTypes.alpha.spawn(player.team(), m_playerNew.x, m_playerNew.y);
+                //Unit unitNew = UnitTypes.alpha.spawn(player.team(), m_playerNew.x, m_playerNew.y);
+                Unit unitNew = UnitTypes.alpha.create(player.team());
                 unitNew.spawnedByCore = true;
                 unitNew.dead = false;
                 unitNew.add();
+                unitNew.move(100,100);
+                unitNew.update();
                 //unitNew.move(100,100);
                 m_playerNew.unit(unitNew);
                 m_playerNew.add();
@@ -136,7 +139,7 @@ public class MTDBotPlugin extends Plugin{
                 //Vars.netServer.sendWorldData(player);
                 Events.fire(new PlayerConnect(player));
                 Events.fire(new UnitControlEvent(m_playerNew, unitNew));
-            //}
+            }
 
             Player playerBot = Groups.player.find(p -> p.name == m_strBotName);
             playerBot.set(100,100);
@@ -148,6 +151,9 @@ public class MTDBotPlugin extends Plugin{
             player.sendMessage("test", playerBot);
             player.sendMessage("dead:"+playerBot.dead(), playerBot);
             player.sendMessage("pos:"+playerBot.x+playerBot.y, playerBot);
+            player.sendMessage("test", m_playerNew);
+            player.sendMessage("dead:"+m_playerNew.dead(), m_playerNew);
+            player.sendMessage("pos:"+m_playerNew.x+m_playerNew.y, m_playerNew);
 
 
 /*
