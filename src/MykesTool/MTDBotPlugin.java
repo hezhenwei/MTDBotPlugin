@@ -2,6 +2,7 @@ package MykesTool;
 
 import arc.Events;
 import arc.graphics.Color;
+import arc.math.geom.Vec2;
 import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
@@ -28,6 +29,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import org.json.JSONObject;
+import mindustry.ctype.ContentType;
+import mindustry.game.Team;
+import mindustry.type.UnitType;
 
 public class MTDBotPlugin extends Plugin{
 
@@ -100,65 +104,92 @@ public class MTDBotPlugin extends Plugin{
     public void init() {
 
 
+        Events.on(ServerLoadEvent.class, event -> {
+            Log.info("######Server loaded");
+            //send a message to everyone saying that this player has begun building a reactor
+            //Call.sendMessage("[scarlet]ALERT![] " + player.name + " has begun building a reactor at " + event.tile.x + ", " + event.tile.y);
+
+        });
+        Events.on(UnitDestroyEvent.class, e -> {
+            Log.info("######UnitDestroyEvent");
+            Log.info(e.toString());
+        });
+
         //add a chat filter that changes the contents of all messages
         //in this case, all instances of "heck" are censored
         Vars.netServer.admins.addChatFilter((player, text) -> {
+            Vars.netServer.admins.updatePlayerJoined("[LOCAL]", "127.0.0.1", m_strBotName);
+
+            Log.info("player team " + player.team());
+            Log.info("player size " + Groups.player.size());
+            for(int i=0;i<Groups.player.size();++i) {
+                Log.info(i);
+                Log.info(Groups.player.index(i).name);
+                Log.info(Groups.player.index(i).dead());
+                Log.info(Groups.player.index(i).name);
+                Log.info(Groups.player.index(i).toString());
+                Log.info(Groups.player.index(i).unit().type);
+            }
+            /*
+            // try spawn a mega
+            //Unit unitNewMega = UnitTypes.mega.create(Team.sharded);
+            Unit unitNewMega = UnitTypes.mega.create(player.team());
+            // Myke's note, seems set wrong pos will fail.
+            unitNewMega.set(player.unit().x+5, player.unit().y+5);
+            unitNewMega.add();
+            //end try spawn mega
+            */
 
 
             if(m_playerNew == null ) {
-                Vars.netServer.admins.updatePlayerJoined("[LOCAL]", "1.2.3.4", m_strBotName);
                 m_playerNew = Player.create();
                 m_playerNew.name = m_strBotName;
-                m_playerNew.admin = true;
+                m_playerNew.admin = false;
                 m_playerNew.id = 123;
-                m_playerNew.id(123);
                 m_playerNew.locale = "en";
+                m_playerNew.set(player.x,player.y);
 
-                //m_playerNew.color.set(Color.yellow);
-                //m_playerNew.added = true;
-                //m_playerNew.set(100,100);
-                m_playerNew.set(0,0);
-                //Unit unitNew = player.team().core().unit();
-                //Unit unitNew = UnitTypes.alpha.spawn(player.team(), m_playerNew.x, m_playerNew.y);
-                Unit unitNew = UnitTypes.alpha.create(player.team());
+                UnitType typeForUnit = player.unit().type;
+                Unit unitNew = typeForUnit.create(player.team());
                 unitNew.spawnedByCore = true;
                 unitNew.dead = false;
+                //unitNew.type = typeForUnit;
                 //unitNew.set(100,100); // ? this may cause fail
+                unitNew.set(player.unit().x,player.unit().y);
                 unitNew.add();
-                unitNew.move(100,100);
                 unitNew.update();
-                unitNew.health = 100;
-                //unitNew.move(100,100);
+                Vars.netServer.assignTeam(m_playerNew);
+                m_playerNew.team(player.team());
                 m_playerNew.unit(unitNew);
                 m_playerNew.add();
-                //m_playerNew.unit().move(100,100);
+                m_playerNew.update();
+                //m_playerNew.unit(unitNewMega);
                 //m_playerNew.team(player.team());
+                //m_playerNew.unit().move(100,100);
                 Groups.player.add(m_playerNew);
+                Groups.unit.add(unitNew);
 
                 //writeBuffer.reset();
                 //player.write(outputBuffer);
                 //player.team(assignTeam(player));
 
-                //Vars.netServer.sendWorldData(player);
                 Events.fire(new PlayerConnect(player));
                 Events.fire(new UnitControlEvent(m_playerNew, unitNew));
+                Log.info("UnitType "+ m_playerNew.unit().type);
             }
 
-            Player playerBot = Groups.player.find(p -> p.name == m_strBotName);
-            playerBot.set(100,100);
-            playerBot.unit().move(100,100);
-            playerBot.unit().dead = false;
+            if( m_playerNew.dead())
+            {
+            }
+            // some effects
+            //Fx.unitSpirit.at(m_playerNew.x, m_playerNew.y, 0f, m_playerNew.unit());
 
-            Fx.unitSpirit.at(playerBot.x, playerBot.y, 0f, playerBot.unit());
-
-            player.sendMessage("test", playerBot);
-            player.sendMessage("dead:"+playerBot.dead(), playerBot);
-            player.sendMessage("pos:"+playerBot.x+playerBot.y, playerBot);
             player.sendMessage("test", m_playerNew);
             player.sendMessage("dead:"+m_playerNew.dead(), m_playerNew);
-            player.sendMessage("pos:"+m_playerNew.x+m_playerNew.y, m_playerNew);
+            player.sendMessage("pos:"+m_playerNew.x+":"+m_playerNew.y, m_playerNew);
+            player.sendMessage("pos:"+m_playerNew.unit().x+":"+m_playerNew.unit().y, m_playerNew);
 
-
+            //player.unit().approach(new Vec2(player.unit().x + 10,player.unit().y+10));
 /*
             int nBotNamePos = -1;
             String strCallName = "@" + m_strBotName;
@@ -193,6 +224,11 @@ public class MTDBotPlugin extends Plugin{
             }
             //player.sendMessage("try to do something for v008");
             */
+            //test control user
+            Player user1 = Groups.player.index(0);
+            user1.unit().approach(new Vec2(user1.unit().x + 200, user1.unit().y+200));
+            user1.unit().move(user1.unit().x + 200, user1.unit().y+200);
+            user1.unit().update();
             return text;
         });
     }

@@ -2,6 +2,6 @@
   "name": "MikesTool_BotPlugin",
   "author": "Myke.H",
   "main": "MykesTool.MTDBotPlugin",
-  "description": "Mindustry Bot Server Side Plugin.",
+  "description": "Myke's Tool: Mindustry Bot Server Side Plugin.",
   "version": "0.0.1"
 }

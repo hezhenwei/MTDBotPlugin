@@ -28,6 +28,8 @@ dependencies{
 }
 
 
+defaultTasks 'jar'
+
 jar{
     archiveFileName = "${project.archivesBaseName}-${project.version}.jar"
     from{
